@@ -54,6 +54,12 @@ pub mod hsluv {
     )
   }
 
+  pub fn hex_to_hpluv(hex: &str) -> (f64, f64, f64) {
+    rgb_to_hpluv(
+      hex_to_rgb(hex)
+    )
+  }
+
   pub fn hsluv_to_lch(hsl: (f64, f64, f64)) ->(f64, f64, f64) {
     let (h, s, l) = hsl;
     match l {
@@ -188,6 +194,10 @@ pub mod hsluv {
     lch_to_hsluv(rgb_to_lch(rgb))
   }
 
+  pub fn rgb_to_hpluv(rgb: (f64, f64, f64)) -> (f64, f64, f64) {
+    lch_to_hpluv(rgb_to_lch(rgb))
+  }
+
   pub fn rgb_to_lch(rgb: (f64, f64, f64)) -> (f64, f64, f64) {
     luv_to_lch(
       xyz_to_luv(
@@ -196,13 +206,13 @@ pub mod hsluv {
     )
   }
 
-  fn rgb_to_xyz(rgb: (f64, f64, f64)) -> (f64, f64, f64) {
+  pub fn rgb_to_xyz(rgb: (f64, f64, f64)) -> (f64, f64, f64) {
     let rgbl = vec![to_linear(rgb.0), to_linear(rgb.1), to_linear(rgb.2)];
     let mapping : Vec<f64> = M_INV.iter().map(|i| dot_product(&i.to_vec(), &rgbl)).collect();
     (mapping[0], mapping[1], mapping[2])
   }
 
-  fn luv_to_lch(luv: (f64, f64, f64)) -> (f64, f64, f64) {
+  pub fn luv_to_lch(luv: (f64, f64, f64)) -> (f64, f64, f64) {
     let (l, u, v) = luv;
     let c= (u.powi(2) + v.powi(2)).powf(0.5);
     let hrad = v.atan2(u);
@@ -212,6 +222,29 @@ pub mod hsluv {
     }
     (l, c, h)
   }
+
+  pub fn rgb_to_hex(rgb: (f64, f64, f64)) -> String {
+    let (r,g,b) = rgb_prepare(rgb);
+    // println!("[rgb_to_hex] as hex: #{:02x}{:02x}{:02x}", r,g,b);
+    // println!("[rgb_to_hex] as dec: #{:?} {:?} {:?}", r,g,b);
+    format!("#{:02x}{:02x}{:02x}", r,g,b)
+  }
+
+  pub fn hex_to_rgb(raw_hex: &str) -> (f64, f64, f64) {
+    let hex = raw_hex.trim_left_matches("#");
+    // info!("Raw hex: {:?}; hex: {:?}", raw_hex, hex);
+    if hex.len() != 6 {
+      warn!("Not a hex string!");
+      return (0.0,0.0,0.0)
+    }
+    let mut chunks = hex.as_bytes().chunks(2);
+    let red = i64::from_str_radix(str::from_utf8(chunks.next().unwrap()).unwrap(), 16);
+    let green = i64::from_str_radix(str::from_utf8(chunks.next().unwrap()).unwrap(), 16);
+    let blue = i64::from_str_radix(str::from_utf8(chunks.next().unwrap()).unwrap(), 16);
+    // info!("Chunks: {:?}, red: {:?}, green: {:?}, blue: {:?}", chunks, red, green, blue);
+    ( (red.unwrap_or(0) as f64) / 255.0, (green.unwrap_or(0) as f64) / 255.0, (blue.unwrap_or(0) as f64) / 255.0 )
+  }
+
 
   fn f_inv(t: f64) -> f64 {
     if t > 8.0 {
@@ -247,13 +280,6 @@ pub mod hsluv {
   
   fn dot_product(a: &Vec<f64>, b: &Vec<f64> ) -> f64 {
     a.iter().zip(b.iter()).map(|(i, j)| i * j).sum()
-  }
-
-  fn rgb_to_hex(rgb: (f64, f64, f64)) -> String {
-    let (r,g,b) = rgb_prepare(rgb);
-    // println!("[rgb_to_hex] as hex: #{:02x}{:02x}{:02x}", r,g,b);
-    // println!("[rgb_to_hex] as dec: #{:?} {:?} {:?}", r,g,b);
-    format!("#{:02x}{:02x}{:02x}", r,g,b)
   }
 
   fn rgb_prepare(rgb: (f64, f64, f64)) ->  (u8, u8, u8) {
@@ -353,25 +379,6 @@ pub mod hsluv {
   fn degrees_to_radians(deg: f64) -> f64 {
     deg * PI / 180.0
   }
-
-  pub fn hex_to_rgb(raw_hex: &str) -> (f64, f64, f64) {
-    let hex = raw_hex.trim_left_matches("#");
-    // info!("Raw hex: {:?}; hex: {:?}", raw_hex, hex);
-    if hex.len() != 6 {
-      warn!("Not a hex string!");
-      return (0.0,0.0,0.0)
-    }
-    let mut chunks = hex.as_bytes().chunks(2);
-    let red = i64::from_str_radix(str::from_utf8(chunks.next().unwrap()).unwrap(), 16);
-    let green = i64::from_str_radix(str::from_utf8(chunks.next().unwrap()).unwrap(), 16);
-    let blue = i64::from_str_radix(str::from_utf8(chunks.next().unwrap()).unwrap(), 16);
-    // info!("Chunks: {:?}, red: {:?}, green: {:?}, blue: {:?}", chunks, red, green, blue);
-    ( (red.unwrap_or(0) as f64) / 255.0, (green.unwrap_or(0) as f64) / 255.0, (blue.unwrap_or(0) as f64) / 255.0 )
-  }
-  // hsluvToRgb([H, S, L]) -> [R, G, B]
-  // hpluvToRgb([H, S, L]) -> [R, G, B]
-  // rgbToHsluv([R, G, B]) -> [H, S, L]
-  // rgbToHpluv([R, G, B]) -> [H, S, L]
 }
 
 extern crate spectral;
@@ -382,6 +389,8 @@ mod tests {
 
   use spectral::prelude::*;
   use hsluv::*;
+  use std::fs::File;
+  use std::io::Read;
 
   static TOLLERANCE : f64 = 1e-11;
 
@@ -394,8 +403,6 @@ mod tests {
     assert_that(&(v2 - e2).abs()).is_close_to(0.0, TOLLERANCE);
     assert_that(&(v3 - e3).abs()).is_close_to(0.0, TOLLERANCE);
   }
-
-
 
   #[test]
   fn hsluv_to_hex_test() {
