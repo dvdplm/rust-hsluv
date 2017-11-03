@@ -7,20 +7,22 @@ pub mod hsluv {
   use std::str; 
 
   const M: [[f64;3];3] = [
-      [3.240969941904521, -1.537383177570093, -0.498610760293],
-      [-0.96924363628087, 1.87596750150772, 0.041555057407175],
-      [0.055630079696993, -0.20397695888897, 1.056971514242878],
+    [3.240969941904521, -1.537383177570093, -0.498610760293],
+    [-0.96924363628087, 1.87596750150772, 0.041555057407175],
+    [0.055630079696993, -0.20397695888897, 1.056971514242878],
   ];
 
   const M_INV: [[f64;3];3] = [
-      [0.41239079926595, 0.35758433938387, 0.18048078840183],
-      [0.21263900587151, 0.71516867876775, 0.072192315360733],
-      [0.019330818715591, 0.11919477979462, 0.95053215224966],
+    [0.41239079926595, 0.35758433938387, 0.18048078840183],
+    [0.21263900587151, 0.71516867876775, 0.072192315360733],
+    [0.019330818715591, 0.11919477979462, 0.95053215224966],
   ];
 
-  const REF_X : f64   = 0.95045592705167;
+  // TODO: this shows up in the Ruby source but is not used. What is it for?
+  // const REF_X : f64   = 0.95045592705167;
   const REF_Y : f64   = 1.0;
-  const REF_Z : f64   = 1.089057750759878;
+  // TODO: this shows up in the Ruby source but is not used. What is it for?
+  // const REF_Z : f64   = 1.089057750759878;
   const REF_U : f64   = 0.19783000664283;
   const REF_V : f64   = 0.46831999493879;
   const KAPPA : f64   = 903.2962962;
@@ -354,7 +356,7 @@ pub mod hsluv {
 
   pub fn hex_to_rgb(raw_hex: &str) -> (f64, f64, f64) {
     let hex = raw_hex.trim_left_matches("#");
-    info!("Raw hex: {:?}; hex: {:?}", raw_hex, hex);
+    // info!("Raw hex: {:?}; hex: {:?}", raw_hex, hex);
     if hex.len() != 6 {
       warn!("Not a hex string!");
       return (0.0,0.0,0.0)
@@ -363,7 +365,7 @@ pub mod hsluv {
     let red = i64::from_str_radix(str::from_utf8(chunks.next().unwrap()).unwrap(), 16);
     let green = i64::from_str_radix(str::from_utf8(chunks.next().unwrap()).unwrap(), 16);
     let blue = i64::from_str_radix(str::from_utf8(chunks.next().unwrap()).unwrap(), 16);
-    info!("Chunks: {:?}, red: {:?}, green: {:?}, blue: {:?}", chunks, red, green, blue);
+    // info!("Chunks: {:?}, red: {:?}, green: {:?}, blue: {:?}", chunks, red, green, blue);
     ( (red.unwrap_or(0) as f64) / 255.0, (green.unwrap_or(0) as f64) / 255.0, (blue.unwrap_or(0) as f64) / 255.0 )
   }
   // hsluvToRgb([H, S, L]) -> [R, G, B]
@@ -380,7 +382,6 @@ mod tests {
 
   use spectral::prelude::*;
   use hsluv::*;
-  use super::*;
 
   static TOLLERANCE : f64 = 1e-11;
 
@@ -393,6 +394,8 @@ mod tests {
     assert_that(&(v2 - e2).abs()).is_close_to(0.0, TOLLERANCE);
     assert_that(&(v3 - e3).abs()).is_close_to(0.0, TOLLERANCE);
   }
+
+
 
   #[test]
   fn hsluv_to_hex_test() {
