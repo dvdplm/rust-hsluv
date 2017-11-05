@@ -3,12 +3,7 @@ name = "hsluv"
 version = "0.1.0"
 authors = ["David Palm <dvdplm@gmail.com>"]
 
-[dependencies]
-spectral = "0.6.0"
-log = "0.3"
-
 [dev-dependencies]
-env_logger = "0.3"
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"
