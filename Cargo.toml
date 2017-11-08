@@ -1,5 +1,5 @@
 [package]
-name = "hsluv"
+name = "hsluv-rust"
 description = "Color converstions. Convert to/from various color representations: hex, rgb, hsluv, hpluv, lch and xyz."
 repository = "https://github.com/dvdplm/hsluv-rust"
 readme = "README.md"
