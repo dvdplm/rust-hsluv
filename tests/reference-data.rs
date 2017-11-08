@@ -1,10 +1,9 @@
 #[macro_use]
 extern crate serde_derive;
 
-extern crate hsluv;
-
 #[cfg(test)]
 mod tests {
+  extern crate hsluv;
   extern crate serde;
   extern crate serde_json;
 
@@ -22,7 +21,6 @@ mod tests {
       hpluv: (f64, f64, f64),
   }  
   
-  use hsluv::*;
   use std::fs::File;
   use std::io::Read;
   
