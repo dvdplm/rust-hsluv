@@ -12,7 +12,7 @@ Add this line to your application's Cargo.toml:
 
 ```toml
 [dependencies]
-hsluv = { git = "https://github.com/dvdplm/hsluv-rust" }
+hsluv = "0.1.2"
 ```
 
 ## Usage
