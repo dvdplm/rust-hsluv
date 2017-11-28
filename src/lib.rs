@@ -9,6 +9,7 @@ const M: [[f64;3];3] = [
 ];
 
 const M_INV: [[f64;3];3] = [
+
   [0.41239079926595, 0.35758433938387, 0.18048078840183],
   [0.21263900587151, 0.71516867876775, 0.072192315360733],
   [0.019330818715591, 0.11919477979462, 0.95053215224966],
@@ -213,7 +214,7 @@ pub fn rgb_to_hex(rgb: (f64, f64, f64)) -> String {
 }
 
 pub fn hex_to_rgb(raw_hex: &str) -> (f64, f64, f64) {
-  let hex = raw_hex.trim_left_matches("#");
+  let hex = raw_hex.trim_left_matches('#');
   if hex.len() != 6 {
     println!("Not a hex string!");
     return (0.0,0.0,0.0)
@@ -258,7 +259,7 @@ fn f(t:f64) -> f64 {
   }
 }
 
-fn dot_product(a: &Vec<f64>, b: &Vec<f64> ) -> f64 {
+fn dot_product(a: &[f64], b: &[f64] ) -> f64 {
   a.iter().zip(b.iter()).map(|(i, j)| i * j).sum()
 }
 
@@ -317,12 +318,12 @@ fn get_bounds(l: f64) -> Vec<(f64, f64)> {
 
   let mut retval : Vec<(f64, f64)> = Vec::new();
   
-  for ms in M.iter() {
+  for ms in &M {
     let (m1, m2, m3) = (ms[0], ms[1], ms[2]);
     for t in 0..2 {
       let top1 = (284517.0 * m1 - 94839.0 * m3) * sub2;
-      let top2 = (838422.0 * m3 + 769860.0 * m2 + 731718.0 * m1) * l * sub2 - 769860.0 * (t as f64) * l;
-      let bottom = (632260.0 * m3 - 126452.0 * m2) * sub2 + 126452.0 * (t as f64);
+      let top2 = (838422.0 * m3 + 769860.0 * m2 + 731718.0 * m1) * l * sub2 - 769860.0 * f64::from(t) * l;
+      let bottom = (632260.0 * m3 - 126452.0 * m2) * sub2 + 126452.0 * f64::from(t);
 
       retval.push((top1/bottom, top2/bottom));
     }
