@@ -338,7 +338,7 @@ fn get_bounds(l: f64) -> Vec<(f64, f64)> {
 		_ => l / KAPPA
 	};
 
-	let mut retval : Vec<(f64, f64)> = Vec::new();
+	let mut bounds = Vec::new();
 
 	for ms in &M {
 		let (m1, m2, m3) = (ms[0], ms[1], ms[2]);
@@ -347,10 +347,10 @@ fn get_bounds(l: f64) -> Vec<(f64, f64)> {
 			let top2 = (838422.0 * m3 + 769860.0 * m2 + 731718.0 * m1) * l * sub2 - 769860.0 * f64::from(t) * l;
 			let bottom = (632260.0 * m3 - 126452.0 * m2) * sub2 + 126452.0 * f64::from(t);
 
-			retval.push((top1/bottom, top2/bottom));
+			bounds.push((top1/bottom, top2/bottom));
 		}
 	}
-	retval
+	bounds
 }
 
 fn length_of_ray_until_intersect(theta: f64, line: &(f64, f64)) -> f64 {

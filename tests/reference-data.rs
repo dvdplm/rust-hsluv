@@ -19,14 +19,13 @@ mod tests {
       lch: (f64, f64, f64),
       hsluv: (f64, f64, f64),
       hpluv: (f64, f64, f64),
-  }  
-  
+  }
+
   use std::fs::File;
   use std::io::Read;
-  
-  static TOLLERANCE : f64 = 1e-11;
 
-  #[cfg(test)]
+  static TOLERANCE : f64 = 1e-11;
+
   fn assert_is_close_enough(val: (f64, f64, f64), expected: (f64, f64, f64)) {
     let (v1, v2, v3) = val;
     let (e1, e2, e3) = expected;
@@ -34,17 +33,16 @@ mod tests {
     let dev1 = (v1 - e1).abs();
     let dev2 = (v2 - e2).abs();
     let dev3 = (v3 - e3).abs();
-    if dev1 >= TOLLERANCE || dev2 >= TOLLERANCE || dev3 >= TOLLERANCE {
+    if dev1 >= TOLERANCE || dev2 >= TOLERANCE || dev3 >= TOLERANCE {
       // println!("\nValue is deviating.\nvalue:    {:?}\nexpected: {:?}\ndeviation: {:?}", val, expected, (dev1, dev2, dev3))
       panic!("value {:?} deviates too much from the expected: {:?}", val, expected);
     }
   }
-  
-  #[cfg(test)]
+
   fn load_test_json_data() -> Result<HashMap<String, ColorTest>, Error> {
     const DATA_FILENAME : &str = "./tests/snapshot-rev4.json";
     let mut file = File::open(DATA_FILENAME).expect(&format!("Can't load '{:?}'.", DATA_FILENAME));
-    
+
     let mut data = String::new();
     file.read_to_string(&mut data).unwrap();
 
