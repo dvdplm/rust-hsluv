@@ -12,7 +12,7 @@ Add this line to your application's Cargo.toml:
 
 ```toml
 [dependencies]
-hsluv = "0.1.2"
+rust-hsluv = "0.1.4"
 ```
 
 ## Usage
